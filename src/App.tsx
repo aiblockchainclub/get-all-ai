@@ -4,6 +4,8 @@ import { Loader2 } from "lucide-react";
 export default function App() {
   const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API;
   const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API;
+  console.log(OPENROUTER_API_KEY, "this is api key");
+
   const [prompt, setPrompt] = useState("");
 
   const [gptResponse, setGptResponse] = useState("");
