@@ -7,7 +7,7 @@ export default function App() {
 
   const [prompt, setPrompt] = useState("");
 
-  const [gptResponse, setGptResponse] = useState("");
+  // const [gptResponse, setGptResponse] = useState("");
   const [qwenResponse, setQwenResponse] = useState("");
   const [geminiResponse, setGeminiResponse] = useState("");
   const [llamaResponse, setLlamaResponse] = useState("");
