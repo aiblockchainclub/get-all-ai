@@ -4,7 +4,7 @@ import { Loader2 } from "lucide-react";
 export default function App() {
   const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API;
   const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API;
-  console.log(OPENROUTER_API_KEY, "this is api key");
+  // console.log(OPENROUTER_API_KEY, "this is api key");
 
   const [prompt, setPrompt] = useState("");
 
@@ -12,12 +12,14 @@ export default function App() {
   const [qwenResponse, setQwenResponse] = useState("");
   const [geminiResponse, setGeminiResponse] = useState("");
   const [llamaResponse, setLlamaResponse] = useState("");
+  const [deepseekResponse, setdeepseekResponse] = useState("");
 
   const [loading, setLoading] = useState({
     gpt: false,
     qwen: false,
     gemini: false,
     llama: false,
+    deepseek: false,
   });
 
   const fetchRequest = async (content: string, model: string) => {
@@ -99,6 +101,7 @@ export default function App() {
       qwen: true,
       gemini: true,
       llama: true,
+      deepseek: true,
     });
 
     setGptResponse(
@@ -113,6 +116,10 @@ export default function App() {
       await fetchRequest(prompt, "meta-llama/llama-3.2-1b-instruct:free")
     );
     setLoading((prev) => ({ ...prev, llama: false }));
+    setdeepseekResponse(
+      await fetchRequest(prompt, "deepseek/deepseek-r1:free")
+    );
+    setLoading((prev) => ({ ...prev, deepseek: false }));
   };
 
   const ResponseWindow = ({
@@ -165,6 +172,13 @@ export default function App() {
             title="Llama"
             content={llamaResponse || "No response yet"}
             isLoading={loading.llama}
+          />
+        </div>
+        <div>
+          <ResponseWindow
+            title="DeepSeek"
+            content={deepseekResponse || "No response yet"}
+            isLoading={loading.deepseek}
           />
         </div>
 
