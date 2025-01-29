@@ -2,9 +2,8 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 
 export default function App() {
+  const GROQ_API_KEY = import.meta.env.VITE_GROQ_API;
   const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API;
-  const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API;
-  // console.log(OPENROUTER_API_KEY, "this is api key");
 
   const [prompt, setPrompt] = useState("");
 
@@ -23,16 +22,18 @@ export default function App() {
   });
 
   const fetchRequest = async (content: string, model: string) => {
-    const url = "https://openrouter.ai/api/v1/chat/completions"; // Replace with your API key
+    const url = "https://api.groq.com/openai/v1/chat/completions";
 
     const requestBody = {
-      model: `${model}`,
+      model: model,
       messages: [
         {
           role: "user",
-          content: `${content}`,
+          content: content,
         },
       ],
+      temperature: 0.7,
+      max_tokens: 2000,
     };
 
     try {
@@ -40,7 +41,7 @@ export default function App() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${OPENROUTER_API_KEY}`,
+          Authorization: `Bearer ${GROQ_API_KEY}`,
         },
         body: JSON.stringify(requestBody),
       });
@@ -90,7 +91,6 @@ export default function App() {
       console.error("Error:", error);
     }
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -104,20 +104,25 @@ export default function App() {
       deepseek: true,
     });
 
-    setGptResponse(
-      await fetchRequest(prompt, "microsoft/phi-3-mini-128k-instruct:free")
-    );
+    // // Groq models
+    // setGptResponse(
+    //   await fetchRequest(prompt, "") // GPT-like model
+    // );
     setLoading((prev) => ({ ...prev, gpt: false }));
-    setQwenResponse(await fetchRequest(prompt, "qwen/qwen-2-7b-instruct:free"));
+    setQwenResponse(
+      await fetchRequest(prompt, "gemma2-9b-it") // Qwen-like model
+    );
     setLoading((prev) => ({ ...prev, qwen: false }));
-    setGeminiResponse(await fetchGeminiRequest(prompt));
+    setGeminiResponse(
+      await fetchGeminiRequest(prompt) // Gemini-like model
+    );
     setLoading((prev) => ({ ...prev, gemini: false }));
     setLlamaResponse(
-      await fetchRequest(prompt, "meta-llama/llama-3.2-1b-instruct:free")
+      await fetchRequest(prompt, "llama-3.3-70b-versatile") // Llama-like model
     );
     setLoading((prev) => ({ ...prev, llama: false }));
     setdeepseekResponse(
-      await fetchRequest(prompt, "deepseek/deepseek-r1:free")
+      await fetchRequest(prompt, "deepseek-r1-distill-llama-70b") // Deepseek-like model
     );
     setLoading((prev) => ({ ...prev, deepseek: false }));
   };
@@ -153,18 +158,18 @@ export default function App() {
         </h1>
 
         <div className="grid grid-cols-2 gap-4 mb-8">
-          <ResponseWindow
-            title="Microsoft Phi"
+          {/* <ResponseWindow
+            title="GPT - mistral"
             content={gptResponse || "No response yet"}
             isLoading={loading.gpt}
-          />
+          /> */}
           <ResponseWindow
-            title="qwen"
+            title="Gemma -(Google)"
             content={qwenResponse || "No response yet"}
             isLoading={loading.qwen}
           />
           <ResponseWindow
-            title="gemini"
+            title="Gemini"
             content={geminiResponse || "No response yet"}
             isLoading={loading.gemini}
           />
@@ -173,14 +178,13 @@ export default function App() {
             content={llamaResponse || "No response yet"}
             isLoading={loading.llama}
           />
-        </div>
-        <div>
           <ResponseWindow
             title="DeepSeek"
             content={deepseekResponse || "No response yet"}
             isLoading={loading.deepseek}
           />
         </div>
+        <div></div>
 
         <form onSubmit={handleSubmit} className="flex gap-4">
           <input
